@@ -21,6 +21,8 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
             Type[] types = assembly.GetTypes();
 
             appropriateTypes = GetAppropriateTypes(types, nameof(IgnoreMeAttribute), false);
+
+
             Console.ReadKey();
             Console.WriteLine(password);
         }
@@ -31,12 +33,11 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
             foreach (var type in typesArray)
             {
                 object[] attrbs = type.GetCustomAttributes(false);
-
                 if (withThisAttrib)
                 {
                     foreach (var attrb in attrbs)
                     {
-                        if (attributeType.GetType() == attrb.GetType())
+                        if (attributeType == attrb.GetType().Name)
                         {
                             types.Add(type);
                         }
@@ -44,11 +45,18 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 }
                 else
                 {
-                    foreach (var attrb in attrbs)
+                    if (attrbs.Length == 0)
                     {
-                        if (!(attributeType.GetType() == attrb.GetType()))
+                        types.Add(type);
+                    }
+                    else
+                    {
+                        foreach (var attrb in attrbs)
                         {
-                            types.Add(type);
+                            if (!(attributeType == attrb.GetType().Name))
+                            {
+                                types.Add(type);
+                            }
                         }
                     }
                 }
