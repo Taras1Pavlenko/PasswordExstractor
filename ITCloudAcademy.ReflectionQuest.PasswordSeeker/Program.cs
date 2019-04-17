@@ -28,9 +28,20 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 }
 
             }
-
             Console.ReadKey();
             Console.WriteLine(password);
+        }
+
+       public static Type[] GetAppropriateTypes (Type[] typesArray, Attribute attributeType, bool withThisAttrib)
+        {
+            List<Type> types = new List<Type>();
+            foreach (var type in typesArray)
+            {
+                if (withThisAttrib)
+                {
+                    object[] attrbs = 
+                }
+            }
         }
     }
 }
