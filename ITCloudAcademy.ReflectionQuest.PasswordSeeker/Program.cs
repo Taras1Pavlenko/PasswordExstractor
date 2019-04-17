@@ -14,25 +14,18 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
 
             string password = string.Empty; // TODO: Write password seeker by using reflection
 
+            List<Type> appropriateTypes = new List<Type>();
+
             Assembly assembly = Assembly.LoadFrom(pathToDll);
 
             Type[] types = assembly.GetTypes();
 
-            List<Type> classes = new List<Type>();
-
-            foreach (var type in types)
-            {
-                if (type.GetCustomAttributes(false).Length == 0)
-                {
-                    classes.Add(type);
-                }
-
-            }
+            appropriateTypes = GetAppropriateTypes(types, nameof(IgnoreMeAttribute), false);
             Console.ReadKey();
             Console.WriteLine(password);
         }
 
-        public static Type[] GetAppropriateTypes(Type[] typesArray, Attribute attributeType, bool withThisAttrib)
+        public static List<Type> GetAppropriateTypes(Type[] typesArray, string attributeType, bool withThisAttrib)
         {
             List<Type> types = new List<Type>();
             foreach (var type in typesArray)
@@ -43,7 +36,7 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 {
                     foreach (var attrb in attrbs)
                     {
-                        if (attributeType.Match(attrb))
+                        if (attributeType.GetType() == attrb.GetType())
                         {
                             types.Add(type);
                         }
@@ -53,7 +46,7 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 {
                     foreach (var attrb in attrbs)
                     {
-                        if (!attributeType.Match(attrb))
+                        if (!(attributeType.GetType() == attrb.GetType()))
                         {
                             types.Add(type);
                         }
