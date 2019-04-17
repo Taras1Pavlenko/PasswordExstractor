@@ -17,7 +17,13 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
 
             Type[] types = assembly.GetTypes();
 
-
+            foreach (var type in types)
+            {
+                if (type.GetCustomAttributes(false).Length == 0)
+                {
+                    Console.WriteLine(type.Name);
+                }
+            }
 
             Console.ReadKey();
             Console.WriteLine(password);
