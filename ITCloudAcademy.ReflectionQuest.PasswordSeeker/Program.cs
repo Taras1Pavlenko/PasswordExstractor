@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using ITCloudAcademy.ReflectionQuest.Attributes;
@@ -17,12 +18,15 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
 
             Type[] types = assembly.GetTypes();
 
+            List<Type> classes = new List<Type>();
+
             foreach (var type in types)
             {
                 if (type.GetCustomAttributes(false).Length == 0)
                 {
-                    Console.WriteLine(type.Name);
+                    classes.Add(type);
                 }
+
             }
 
             Console.ReadKey();
