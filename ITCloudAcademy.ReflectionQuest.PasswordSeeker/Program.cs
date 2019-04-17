@@ -23,10 +23,12 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
             appropriateTypes = GetAppropriateTypes(types, nameof(IgnoreMeAttribute));
 
 
+            CreateInstanceOf(types);
 
             Console.ReadKey();
             Console.WriteLine(password);
         }
+
 
         public static List<Type> GetAppropriateTypes(Type[] typesArray, string attributeType)
         {
@@ -50,6 +52,24 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 }
             }
             return types;
+        }
+
+        public static void CreateInstanceOf(Type[] types)
+        {
+            foreach (var obj in types)
+            {
+                var instanceOf = Activator.CreateInstance(obj.GetType());
+                WorkWithObject(instanceOf);
+            }
+        }
+
+        private static void WorkWithObject(object instanceOf)
+        {
+            MemberInfo[] memberInfos = instanceOf.GetType().GetMembers();
+            foreach (var item in memberInfos)
+            {
+                Console.WriteLine(item);
+            }
         }
     }
 }
