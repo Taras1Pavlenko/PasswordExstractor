@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
 {
@@ -14,13 +11,16 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
         private string pathToDll = Path.GetFullPath("..\\..\\ITCloudAcademy.ReflectionQuest.Password.dll");
         private string password = String.Empty;
         private List<Type> types = new List<Type>();
-        private SortedList<int, object> AllMembers = new SortedList<int, object>();
+        private SortedList<int, object> ResultsList = new SortedList<int, object>();
 
         public void Run()
         {
             GetNecessaryTypes();
-            GetResult
+            GetGetNecessaryMembers();
+            password = GetResult();
+            Console.WriteLine($"Password is: {password}");
         }
+
 
         private void GetNecessaryTypes()
         {
@@ -33,7 +33,6 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                     types.Add(type);
                 }
             }
-            GetGetNecessaryMembers();
         }
 
         private void GetGetNecessaryMembers()
@@ -43,7 +42,6 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 FieldsProcessing(type);
                 PropsProcessing(type);
                 MethodsProcessing(type);
-
             }
         }
 
@@ -52,13 +50,13 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
             MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
             foreach (var method in methods)
             {
-                if((Attribute.GetCustomAttribute(method, typeof(PasswordIsHereAttribute), false) != null))
+                if ((Attribute.GetCustomAttribute(method, typeof(PasswordIsHereAttribute), false) != null))
                 {
                     PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(method, typeof(PasswordIsHereAttribute));
                     object obj = Activator.CreateInstance(type);
                     int chunckNumber = attribute.ChunkNo;
-                    string passwordChuck = method.Invoke(obj, new object[0] { } ).ToString();
-                    AllMembers.Add(chunckNumber, passwordChuck);
+                    string passwordChuck = method.Invoke(obj, new object[0] { }).ToString();
+                    ResultsList.Add(chunckNumber, passwordChuck);
                 }
             }
         }
@@ -73,7 +71,7 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                     PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(prop, typeof(PasswordIsHereAttribute));
                     int chunckNumber = attribute.ChunkNo;
                     string passwordChuck = prop.GetValue(Activator.CreateInstance(type)).ToString();
-                    AllMembers.Add(chunckNumber, passwordChuck);
+                    ResultsList.Add(chunckNumber, passwordChuck);
                 }
             }
         }
@@ -89,9 +87,18 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                     PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(field, typeof(PasswordIsHereAttribute));
                     int chunckNumber = attribute.ChunkNo;
                     string passwordChuck = field.GetValue(Activator.CreateInstance(type)).ToString();
-                    AllMembers.Add(chunckNumber, passwordChuck);
+                    ResultsList.Add(chunckNumber, passwordChuck);
                 }
             }
+        }
+        private string GetResult()
+        {
+            string pass = "";
+            foreach (var chuck in ResultsList)
+            {
+                pass += chuck.Value.ToString();
+            }
+            return pass;
         }
     }
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using ITCloudAcademy.ReflectionQuest.Attributes;
 
 namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
 {
