@@ -11,7 +11,7 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
         private string pathToDll = Path.GetFullPath("..\\..\\ITCloudAcademy.ReflectionQuest.Password.dll");
         private string password = String.Empty;
         private List<Type> types = new List<Type>();
-        private SortedList<int, object> ResultsList = new SortedList<int, object>();
+        private SortedList<int, object> ChunksList = new SortedList<int, object>();
 
         public void Run()
         {
@@ -54,9 +54,9 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 {
                     PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(method, typeof(PasswordIsHereAttribute));
                     object obj = Activator.CreateInstance(type);
-                    int chunckNumber = attribute.ChunkNo;
+                    int chunkNumber = attribute.ChunkNo;
                     string passwordChuck = method.Invoke(obj, new object[0] { }).ToString();
-                    ResultsList.Add(chunckNumber, passwordChuck);
+                    ChunksList.Add(chunkNumber, passwordChuck);
                 }
             }
         }
@@ -69,9 +69,9 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 if ((Attribute.GetCustomAttribute(prop, typeof(PasswordIsHereAttribute), false) != null))
                 {
                     PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(prop, typeof(PasswordIsHereAttribute));
-                    int chunckNumber = attribute.ChunkNo;
+                    int chunkNumber = attribute.ChunkNo;
                     string passwordChuck = prop.GetValue(Activator.CreateInstance(type)).ToString();
-                    ResultsList.Add(chunckNumber, passwordChuck);
+                    ChunksList.Add(chunkNumber, passwordChuck);
                 }
             }
         }
@@ -85,16 +85,16 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 if ((Attribute.GetCustomAttribute(field, typeof(PasswordIsHereAttribute), false) != null))
                 {
                     PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(field, typeof(PasswordIsHereAttribute));
-                    int chunckNumber = attribute.ChunkNo;
+                    int chunkNumber = attribute.ChunkNo;
                     string passwordChuck = field.GetValue(Activator.CreateInstance(type)).ToString();
-                    ResultsList.Add(chunckNumber, passwordChuck);
+                    ChunksList.Add(chunkNumber, passwordChuck);
                 }
             }
         }
         private string GetResult()
         {
             string pass = "";
-            foreach (var chuck in ResultsList)
+            foreach (var chuck in ChunksList)
             {
                 pass += chuck.Value.ToString();
             }
