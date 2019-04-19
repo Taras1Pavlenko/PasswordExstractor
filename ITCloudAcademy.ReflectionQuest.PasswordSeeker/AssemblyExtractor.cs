@@ -19,6 +19,7 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
         public void Run()
         {
             GetNecessaryTypes();
+            GetResult
         }
 
         private void GetNecessaryTypes()
@@ -39,28 +40,58 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
         {
             foreach (var type in types)
             {
-                FieldInfo[] memberInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldsProcessing(type);
+                PropsProcessing(type);
+                MethodsProcessing(type);
 
-                foreach (var member in memberInfos)
+            }
+        }
+
+        private void MethodsProcessing(Type type)
+        {
+            MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (var method in methods)
+            {
+                if((Attribute.GetCustomAttribute(method, typeof(PasswordIsHereAttribute), false) != null))
                 {
-                    if ((Attribute.GetCustomAttribute(member, typeof(PasswordIsHereAttribute), false) != null))
-                    {
-                        PasswordIsHereAttribute password = (PasswordIsHereAttribute)Attribute
-                            .GetCustomAttribute(member, typeof(PasswordIsHereAttribute));
-                        int number = password.ChunkNo;
-                        AllMembers.Add(number, CreateInstance(type, member));
-                        Console.WriteLine(member);
-                    }
+                    PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(method, typeof(PasswordIsHereAttribute));
+                    object obj = Activator.CreateInstance(type);
+                    int chunckNumber = attribute.ChunkNo;
+                    string passwordChuck = method.Invoke(obj, new object[0] { } ).ToString();
+                    AllMembers.Add(chunckNumber, passwordChuck);
                 }
             }
         }
 
-        private object CreateInstance(Type type, FieldInfo member)
+        private void PropsProcessing(Type type)
         {
-            var a = type.Name;
-            var inctance = Activator.CreateInstance(type.GetType());
-            
-           return member.GetValue(type);
+            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (var prop in properties)
+            {
+                if ((Attribute.GetCustomAttribute(prop, typeof(PasswordIsHereAttribute), false) != null))
+                {
+                    PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(prop, typeof(PasswordIsHereAttribute));
+                    int chunckNumber = attribute.ChunkNo;
+                    string passwordChuck = prop.GetValue(Activator.CreateInstance(type)).ToString();
+                    AllMembers.Add(chunckNumber, passwordChuck);
+                }
+            }
+        }
+
+        private void FieldsProcessing(Type type)
+        {
+            FieldInfo[] fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+
+            foreach (var field in fieldInfos)
+            {
+                if ((Attribute.GetCustomAttribute(field, typeof(PasswordIsHereAttribute), false) != null))
+                {
+                    PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(field, typeof(PasswordIsHereAttribute));
+                    int chunckNumber = attribute.ChunkNo;
+                    string passwordChuck = field.GetValue(Activator.CreateInstance(type)).ToString();
+                    AllMembers.Add(chunckNumber, passwordChuck);
+                }
+            }
         }
     }
 }
