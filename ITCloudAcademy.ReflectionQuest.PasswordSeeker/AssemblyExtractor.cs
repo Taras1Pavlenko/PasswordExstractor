@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
 {
     class AssemblyExtractor
     {
         private string pathToDll = Path.GetFullPath("..\\..\\ITCloudAcademy.ReflectionQuest.Password.dll");
-        private string password = String.Empty;
+        private StringBuilder password = new StringBuilder();
         private List<Type> types = new List<Type>();
         private SortedList<int, object> ChunksList = new SortedList<int, object>();
 
@@ -91,12 +92,12 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 }
             }
         }
-        private string GetResult()
+        private StringBuilder GetResult()
         {
-            string pass = "";
-            foreach (var chuck in ChunksList)
+            StringBuilder pass = new StringBuilder();
+            foreach (var chunk in ChunksList)
             {
-                pass += chuck.Value.ToString();
+                pass.Append(chunk.Value);
             }
             return pass;
         }
