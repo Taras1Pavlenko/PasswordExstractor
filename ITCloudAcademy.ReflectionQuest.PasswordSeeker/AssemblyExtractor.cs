@@ -36,12 +36,13 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
         {
             foreach (var type in types)
             {
-                FieldsProcessing(type);
-                PropsProcessing(type);
-                MethodsProcessing(type);
+                object inctance = Activator.CreateInstance(type);
+                FieldsProcessing(type, inctance);
+                PropsProcessing(type, inctance);
+                MethodsProcessing(type, inctance);
             }
         }
-        private void MethodsProcessing(Type type)
+        private void MethodsProcessing(Type type, object inctance)
         {
             MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance);
             foreach (var method in methods)
@@ -49,14 +50,13 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 if ((Attribute.GetCustomAttribute(method, typeof(PasswordIsHereAttribute), false) != null))
                 {
                     PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(method, typeof(PasswordIsHereAttribute));
-                    object obj = Activator.CreateInstance(type);
                     int chunkNumber = attribute.ChunkNo;
-                    string passwordChuck = method.Invoke(obj, new object[0] { }).ToString();
+                    string passwordChuck = method.Invoke(inctance, new object[0] { }).ToString();
                     ChunksList.Add(chunkNumber, passwordChuck);
                 }
             }
         }
-        private void PropsProcessing(Type type)
+        private void PropsProcessing(Type type, object inctance)
         {
             PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var prop in properties)
@@ -65,12 +65,12 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 {
                     PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(prop, typeof(PasswordIsHereAttribute));
                     int chunkNumber = attribute.ChunkNo;
-                    string passwordChuck = prop.GetValue(Activator.CreateInstance(type)).ToString();
+                    string passwordChuck = prop.GetValue(inctance).ToString();
                     ChunksList.Add(chunkNumber, passwordChuck);
                 }
             }
         }
-        private void FieldsProcessing(Type type)
+        private void FieldsProcessing(Type type, object inctance)
         {
             FieldInfo[] fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -80,7 +80,7 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 {
                     PasswordIsHereAttribute attribute = (PasswordIsHereAttribute)Attribute.GetCustomAttribute(field, typeof(PasswordIsHereAttribute));
                     int chunkNumber = attribute.ChunkNo;
-                    string passwordChuck = field.GetValue(Activator.CreateInstance(type)).ToString();
+                    string passwordChuck = field.GetValue(inctance).ToString();
                     ChunksList.Add(chunkNumber, passwordChuck);
                 }
             }
