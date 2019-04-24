@@ -13,16 +13,13 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
         private StringBuilder password = new StringBuilder();
         private List<Type> types = new List<Type>();
         private SortedList<int, object> ChunksList = new SortedList<int, object>();
-
         public void Run()
         {
             GetNecessaryTypes();
-            GetGetNecessaryMembers();
+            GetNecessaryMembers();
             password = GetResult();
             Console.WriteLine($"Password is: {password}");
         }
-
-
         private void GetNecessaryTypes()
         {
             Assembly assembly = Assembly.LoadFrom(pathToDll);
@@ -35,8 +32,7 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 }
             }
         }
-
-        private void GetGetNecessaryMembers()
+        private void GetNecessaryMembers()
         {
             foreach (var type in types)
             {
@@ -45,10 +41,9 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 MethodsProcessing(type);
             }
         }
-
         private void MethodsProcessing(Type type)
         {
-            MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance);
             foreach (var method in methods)
             {
                 if ((Attribute.GetCustomAttribute(method, typeof(PasswordIsHereAttribute), false) != null))
@@ -61,10 +56,9 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 }
             }
         }
-
         private void PropsProcessing(Type type)
         {
-            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var prop in properties)
             {
                 if ((Attribute.GetCustomAttribute(prop, typeof(PasswordIsHereAttribute), false) != null))
@@ -76,7 +70,6 @@ namespace ITCloudAcademy.ReflectionQuest.PasswordSeeker
                 }
             }
         }
-
         private void FieldsProcessing(Type type)
         {
             FieldInfo[] fieldInfos = type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
